@@ -4,7 +4,7 @@
 
     <select  id="queryAll"  resultType="java.util.Map">
 
-select  * from ncp_map  limit 2
+    select  * from ncp_map  limit #{str}
     </select>
 
 

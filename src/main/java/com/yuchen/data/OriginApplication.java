@@ -11,7 +11,6 @@ import javax.xml.crypto.Data;
 
 @SpringBootApplication
 @EnableConfigurationProperties(value = { DataSourcePrimary.class, DataSourceSecond.class })
-//@MapperScan("com.yuchen.data.mapper.*")
 public class OriginApplication {
     public static void main(String[] args) {
         SpringApplication.run(OriginApplication.class, args);

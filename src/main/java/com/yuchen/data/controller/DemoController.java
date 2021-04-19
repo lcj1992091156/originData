@@ -23,7 +23,7 @@ public class DemoController {
     @PostMapping("/1")
     public  Object  demo1(){
 
-        List<Map> maps = mysqlDemo.queryAll();
+        List<Map> maps = mysqlDemo.queryAll(2);
         List<UserModel> all = userMapper.getAll();
         Map map=new HashMap(2);
         map.put("mysql",maps);

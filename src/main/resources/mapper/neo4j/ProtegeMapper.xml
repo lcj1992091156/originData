@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuchen.data.mapper.neo4j.ProtegeMapper">
+<!--    &#45;&#45;     create( protege:protege{ name:${protege.name} ,age:${protege.dataType} , strId: ${protege.strId} })-->
+    <insert id ="add">
+   CREATE (p:protege { uuid:#{protege.strId},dname: #{protege.name},dataType:#{protege.dataType} })
+    </insert>
+
+
+
+
+<!--    merge(u:user{name:'kk'})-[r:son{shopdate:"12/12/2014",price:55000}]->(m:user{name:'ll'})return  u,r,m-->
+    <insert id="addSon">
+    MERGE(u:protege{id:})-[r:son{shopdate:"12/12/2014",price:55000}]->(m:user{name:'ll'})return  u,r,m
+    </insert>
+
+    <select id="selectById"  resultMap="protegeMap">
+	match
+		  (u:protege)
+		where
+		  id(u) = #{id}
+		return
+          id as id,u.name as name,u.type as dataType ,u.uuid as uuId, u.id=id
+    </select>
+
+    <select id="selectByIdCount" resultType="java.lang.Integer">
+	    match
+		  (u:protege)
+		where
+		  id(u) = #{id}
+		return
+         COUNT(1)
+    </select>
+
+
+    <!-- 自定义结果集-->
+    <resultMap id="protegeMap" type="com.yuchen.data.model.Protege">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="dataType" column="dataType"/>
+        <result property="uuId" column="uuId"/>
+    </resultMap>
+    <insert id="addRelationship">
+        MATCH (p:protege),(m:protege)
+        where  id(p)=#{entity.id} AND  id(m) =#{entity.tagId}
+        CREATE (p)-[r:#{entity.relationship}{relationship:entity.relationship}]->(cc)
+        RETURN r
+
+    </insert>
+
+
+</mapper>
