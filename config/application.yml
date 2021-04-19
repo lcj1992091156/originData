@@ -49,7 +49,7 @@ spring.resources.static-locations: classpath:static/,file:static/
 # 日志配置
 logging:
   level:
-    yuchen: debug
+    com.yuchen.data: DEBUG
     org.springframework: WARN
     org.spring.springboot.dao: debug
 
