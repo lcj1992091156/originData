@@ -2,16 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yuchen.data.mapper.neo4j.ProtegeMapper">
 <!--    &#45;&#45;     create( protege:protege{ name:${protege.name} ,age:${protege.dataType} , strId: ${protege.strId} })-->
-    <insert id ="add">
-   CREATE (p:protege { uuid:#{protege.strId},dname: #{protege.name},dataType:#{protege.dataType} })
-    </insert>
-
-
-
-
-<!--    merge(u:user{name:'kk'})-[r:son{shopdate:"12/12/2014",price:55000}]->(m:user{name:'ll'})return  u,r,m-->
-    <insert id="addSon">
-    MERGE(u:protege{id:})-[r:son{shopdate:"12/12/2014",price:55000}]->(m:user{name:'ll'})return  u,r,m
+    <insert id ="add"   keyProperty="id" >
+   CREATE (p:protege { name: #{protege.name},uuid:#{protege.strId},dataType:#{protege.dataType},parentNode:#{protege.parentNode} })
     </insert>
 
     <select id="selectById"  resultMap="protegeMap">
@@ -20,7 +12,7 @@
 		where
 		  id(u) = #{id}
 		return
-          id as id,u.name as name,u.type as dataType ,u.uuid as uuId, u.id=id
+          u.id as id,u.name as name,u.dataType as dataType ,u.uuid as uuId, u.id=id
     </select>
 
     <select id="selectByIdCount" resultType="java.lang.Integer">
@@ -31,19 +23,45 @@
 		return
          COUNT(1)
     </select>
+    <select id="selectAll" resultMap="protegeMap">
 
+  MATCH (n:protege)
+  <where>
+      n.dataType='class'
+      <if test="entity.parentNode==true">
+          and n.parentNode = true
+      </if>
+      <if test="entity.name !=null and entity.name !=''">
+         AND n.name =~ #{entity.name}
+      </if>
+  </where>
+
+  return id(n) as  id,n.dataType as dataType,n.name as name,n.parentNode as parentNode,n.uuid as strId
+    </select>
+
+    <select id="selectAllSon" resultMap="protegeMap">
+
+  MATCH (n:protege)-[r:son{relationship:"son"}]->(m:protege) where n.uuid=#{entity.uuid}
+  return id(m) as  id,m.dataType as dataType,m.name as name,m.parentNode as parentNode,m.uuid as strId
+    </select>
 
     <!-- 自定义结果集-->
     <resultMap id="protegeMap" type="com.yuchen.data.model.Protege">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="dataType" column="dataType"/>
-        <result property="uuId" column="uuId"/>
+        <result property="strId" column="strId"/>
+        <result property="parentNode" column="parentNode"/>
     </resultMap>
+
+
+
     <insert id="addRelationship">
         MATCH (p:protege),(m:protege)
-        where  id(p)=#{entity.id} AND  id(m) =#{entity.tagId}
-        CREATE (p)-[r:#{entity.relationship}{relationship:entity.relationship}]->(cc)
+        where  id(p)=#{entity.id} AND  m.uuid =#{entity.tagId}
+        CREATE
+        (p)-[r:son{relationship:#{entity.relationship} }
+        ]->(m)
         RETURN r
 
     </insert>

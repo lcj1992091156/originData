@@ -9,3 +9,5 @@
 POST  http://localhost:8888/origin/demo/1
 Content-Type: application/json
 ###
+
+POST  http://localhost:8888/origin/
